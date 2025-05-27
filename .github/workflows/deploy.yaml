@@ -1,0 +1,74 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  USERNAME: mahyargdz
+  IMAGE_NAME: mahyargdz/${{ github.event.repository.name }}
+  FRESH_BAZAR_SERVER: "https://captain.dev.freshbazaar.app"
+  APP_NAME: marhaba-front
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.USERNAME }}
+          password: ${{ secrets.GT_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=short
+            type=ref,event=branch
+            latest
+
+      - name: Set image URL
+        run: |
+          FIRST_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1 | sed 's/.*://')
+          IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_URL=${{ env.REGISTRY }}/$IMAGE_NAME_LOWER:$FIRST_TAG" >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Install CapRover CLI
+        run: npm install -g caprover
+
+      - name: Deploy to server
+        if: success()
+        env:
+          IMAGE_URL: ${{ env.IMAGE_URL }}
+          APP_NAME: ${{ env.APP_NAME }}
+          FRESH_BAZAR_SERVER: ${{ env.FRESH_BAZAR_SERVER }}
+          APP_TOKEN: d763b03131143a3d7858da04c0581996a9e21b0d4b3b157699ce615658c5320a
+        run: |
+          caprover deploy -a "$APP_NAME" -u "$FRESH_BAZAR_SERVER" --appToken "$APP_TOKEN" -i "$IMAGE_URL"
