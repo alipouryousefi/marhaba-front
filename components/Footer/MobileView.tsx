@@ -51,7 +51,7 @@ const Footer = () => {
               © Marhaba Group
             </span>
             <span className="mt-1 text-[#5D5D5D] font-InterTight text-[13px] md:text-sm font-normal leading-[135%]">
-              2025 all rights reserved.
+              2025 all rights reserved
             </span>
           </div>
         </motion.div>
