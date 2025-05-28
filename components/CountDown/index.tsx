@@ -1,20 +1,22 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import NumberFlow from '@number-flow/react'
 import { motion } from 'framer-motion'
 
 const CountDown = () => {
-  const calculateTimeLeft = () => {
+  const [timeLeft, setTimeLeft] = useState(() => {
     const targetDate = new Date('2025-06-26T00:00:00');
     const now = new Date();
     const difference = targetDate.getTime() - now.getTime();
+    
     if (difference <= 0) {
       return {
         days: 0,
         hours: 0,
         minutes: 0,
-        seconds: 0
+        seconds: 0,
+        totalSeconds: 0
       };
     }
 
@@ -22,27 +24,30 @@ const CountDown = () => {
       days: Math.floor(difference / (1000 * 60 * 60 * 24)),
       hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
       minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60)
+      seconds: Math.floor((difference / 1000) % 60),
+      totalSeconds: Math.floor(difference / 1000)
     };
-  };
-
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-  const frameRef = useRef<number | null>(null);
+  });
 
   useEffect(() => {
-    let isMounted = true;
-    const update = () => {
-      if (!isMounted) return;
-      setTimeLeft(calculateTimeLeft());
-      frameRef.current = requestAnimationFrame(update);
-    };
-    frameRef.current = requestAnimationFrame(update);
-    return () => {
-      isMounted = false;
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current);
-      }
-    };
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev.totalSeconds <= 0) {
+          return prev;
+        }
+
+        const newTotalSeconds = prev.totalSeconds - 1;
+        return {
+          days: Math.floor(newTotalSeconds / (60 * 60 * 24)),
+          hours: Math.floor((newTotalSeconds / (60 * 60)) % 24),
+          minutes: Math.floor((newTotalSeconds / 60) % 60),
+          seconds: newTotalSeconds % 60,
+          totalSeconds: newTotalSeconds
+        };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
 
   const containerVariants = {
