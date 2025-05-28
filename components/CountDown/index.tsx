@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import NumberFlow from '@number-flow/react'
 import { motion } from 'framer-motion'
 
@@ -27,13 +27,22 @@ const CountDown = () => {
   };
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    let isMounted = true;
+    const update = () => {
+      if (!isMounted) return;
       setTimeLeft(calculateTimeLeft());
-    }, 1000);
-
-    return () => clearInterval(timer);
+      frameRef.current = requestAnimationFrame(update);
+    };
+    frameRef.current = requestAnimationFrame(update);
+    return () => {
+      isMounted = false;
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
   }, []);
 
   const containerVariants = {
