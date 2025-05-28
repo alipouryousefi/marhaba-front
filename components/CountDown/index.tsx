@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 
 const CountDown = () => {
   const calculateTimeLeft = () => {
-    const targetDate = new Date('2025-06-18T00:00:00');
+    const targetDate = new Date('2025-06-26T00:00:00');
     const now = new Date();
     const difference = targetDate.getTime() - now.getTime();
     if (difference <= 0) {
