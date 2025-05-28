@@ -5,45 +5,46 @@ import NumberFlow from '@number-flow/react'
 import { motion } from 'framer-motion'
 
 const CountDown = () => {
-  const [timeLeft, setTimeLeft] = useState(() => {
+  const [days, setDays] = useState(0);
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [totalSeconds, setTotalSeconds] = useState(0);
+
+  useEffect(() => {
     const targetDate = new Date('2025-06-26T00:00:00');
     const now = new Date();
     const difference = targetDate.getTime() - now.getTime();
     
     if (difference <= 0) {
-      return {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-        totalSeconds: 0
-      };
+      setDays(0);
+      setHours(0);
+      setMinutes(0);
+      setSeconds(0);
+      setTotalSeconds(0);
+      return;
     }
 
-    return {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
-      totalSeconds: Math.floor(difference / 1000)
-    };
-  });
+    const initialTotalSeconds = Math.floor(difference / 1000);
+    setTotalSeconds(initialTotalSeconds);
+    setDays(Math.floor(initialTotalSeconds / (60 * 60 * 24)));
+    setHours(Math.floor((initialTotalSeconds / (60 * 60)) % 24));
+    setMinutes(Math.floor((initialTotalSeconds / 60) % 60));
+    setSeconds(initialTotalSeconds % 60);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.totalSeconds <= 0) {
-          return prev;
-        }
-
-        const newTotalSeconds = prev.totalSeconds - 1;
-        return {
-          days: Math.floor(newTotalSeconds / (60 * 60 * 24)),
-          hours: Math.floor((newTotalSeconds / (60 * 60)) % 24),
-          minutes: Math.floor((newTotalSeconds / 60) % 60),
-          seconds: newTotalSeconds % 60,
-          totalSeconds: newTotalSeconds
-        };
+      setTotalSeconds(prev => {
+        if (prev <= 0) return 0;
+        
+        const newTotalSeconds = prev - 1;
+        setDays(Math.floor(newTotalSeconds / (60 * 60 * 24)));
+        setHours(Math.floor((newTotalSeconds / (60 * 60)) % 24));
+        setMinutes(Math.floor((newTotalSeconds / 60) % 60));
+        setSeconds(newTotalSeconds % 60);
+        
+        return newTotalSeconds;
       });
     }, 1000);
 
@@ -86,7 +87,7 @@ const CountDown = () => {
         className="relative flex flex-col justify-center items-center w-[280px] md:min-w-[104px] h-[144px] md:h-[96px] p-[12px_12px_20px_12px] gap-2 rounded-xl bg-[#F7F7F7]"
       >
         <NumberFlow
-          value={timeLeft.days}
+          value={days}
           className="text-[#656565] text-center font-InterTight text-[80px] md:text-[44px] font-light leading-[135%]"
         />
         <span className="absolute right-2 bottom-2 text-[#888] text-right font-InterTight text-sm font-medium leading-[125%]">
@@ -101,7 +102,7 @@ const CountDown = () => {
           className="relative flex flex-col justify-center items-center w-[80px] md:w-[104px] h-[80px] md:h-[96px] p-[12px_12px_20px_12px] gap-2 rounded-xl bg-[#F7F7F7]"
         >
           <NumberFlow
-            value={timeLeft.hours}
+            value={hours}
             className="text-[#656565] text-center font-InterTight text-[34px] md:text-[44px] font-light leading-[135%]"
           />
           <span className="absolute right-2 bottom-2 text-[#888] text-right font-InterTight text-sm font-medium leading-[125%]">
@@ -113,7 +114,7 @@ const CountDown = () => {
           className="relative flex flex-col justify-center items-center w-[80px] md:w-[104px] h-[80px] md:h-[96px] p-[12px_12px_20px_12px] gap-2 rounded-xl bg-[#F7F7F7]"
         >
           <NumberFlow
-            value={timeLeft.minutes}
+            value={minutes}
             className="text-[#656565] text-center font-InterTight text-[34px] md:text-[44px] font-light leading-[135%]"
           />
           <span className="absolute right-2 bottom-2 text-[#888] text-right font-InterTight text-sm font-medium leading-[125%]">
@@ -125,7 +126,7 @@ const CountDown = () => {
           className="relative flex flex-col justify-center items-center w-[80px] md:w-[104px] h-[80px] md:h-[96px] p-[12px_12px_20px_12px] gap-2 rounded-xl bg-[#F7F7F7]"
         >
           <NumberFlow
-            value={timeLeft.seconds}
+            value={seconds}
             className="text-[#656565] text-center font-InterTight text-[34px] md:text-[44px] font-light leading-[135%]"
             spinTiming={{ duration: 500, easing: 'ease-in-out' }}
           />
