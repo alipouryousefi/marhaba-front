@@ -5,43 +5,36 @@ import NumberFlow from '@number-flow/react'
 import { motion } from 'framer-motion'
 
 const CountDown = () => {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 29,
-    hours: 16,
-    minutes: 23,
-    seconds: 20
-  })
+  const calculateTimeLeft = () => {
+    const targetDate = new Date('2025-06-18T00:00:00');
+    const now = new Date();
+    const difference = targetDate.getTime() - now.getTime();
+    if (difference <= 0) {
+      return {
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0
+      };
+    }
+
+    return {
+      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((difference / 1000 / 60) % 60),
+      seconds: Math.floor((difference / 1000) % 60)
+    };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        let { days, hours, minutes, seconds } = prev
-        
-        if (seconds > 0) {
-          seconds--
-        } else {
-          seconds = 59
-          if (minutes > 0) {
-            minutes--
-          } else {
-            minutes = 59
-            if (hours > 0) {
-              hours--
-            } else {
-              hours = 23
-              if (days > 0) {
-                days--
-              }
-            }
-          }
-        }
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
 
-        return { days, hours, minutes, seconds }
-      })
-    }, 1000)
-
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },

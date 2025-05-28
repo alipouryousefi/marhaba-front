@@ -101,7 +101,7 @@ const Footer = () => {
               viewBox="0 0 20 21"
               className="transition-all duration-300 group-hover:fill-white fill-[#000000] group-hover:scale-110"
             >
-              <g clip-path="url(#clip0_1_627)">
+              <g clipPath="url(#clip0_1_627)">
                 <path d="M20 10.5C20 4.97715 15.5229 0.5 10 0.5C4.47715 0.5 0 4.97715 0 10.5C0 15.4912 3.65684 19.6283 8.4375 20.3785V13.3906H5.89844V10.5H8.4375V8.29688C8.4375 5.79063 9.93047 4.40625 12.2146 4.40625C13.3084 4.40625 14.4531 4.60156 14.4531 4.60156V7.0625H13.1922C11.95 7.0625 11.5625 7.8334 11.5625 8.625V10.5H14.3359L13.8926 13.3906H11.5625V20.3785C16.3432 19.6283 20 15.4912 20 10.5Z" />
               </g>
               <defs>
@@ -143,9 +143,9 @@ const Footer = () => {
             >
               <path
                 d="M2.5 18L8.79033 11.7097M8.79033 11.7097L2.5 3H6.66667L11.2097 9.29033M8.79033 11.7097L13.3333 18H17.5L11.2097 9.29033M17.5 3L11.2097 9.29033"
-                stroke-width="1.25"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </motion.a>
