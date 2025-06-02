@@ -69,6 +69,6 @@ jobs:
           IMAGE_URL: ${{ env.IMAGE_URL }}
           APP_NAME: ${{ env.APP_NAME }}
           FRESH_BAZAR_SERVER: ${{ env.FRESH_BAZAR_SERVER }}
-          APP_TOKEN: d763b03131143a3d7858da04c0581996a9e21b0d4b3b157699ce615658c5320a
+          APP_TOKEN: 0939f8b9b2b904d1ca48d2be54acfa182429fbdf94593423be9ee280857df841
         run: |
           caprover deploy -a "$APP_NAME" -u "$FRESH_BAZAR_SERVER" --appToken "$APP_TOKEN" -i "$IMAGE_URL"
